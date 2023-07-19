@@ -1,6 +1,6 @@
 package com.stateless.security.example.controller;
 
-import com.stateless.security.example.controller.dto.LoginRequestDto;
+import com.stateless.security.example.dto.LoginRequestDto;
 import io.jsonwebtoken.*;
 import org.springframework.web.bind.annotation.*;
 

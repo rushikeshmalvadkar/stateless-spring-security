@@ -1,0 +1,24 @@
+STUDENT
+INSTRUCTOR
+
+
+
+
+users
+- ID
+- FIRST_NAME
+- LAST_NAME
+- EMAIL_ID
+- PASSWORD
+- REGISTRATION_DATE_TIME
+- ROLE_ID
+
+role
+- ID
+- NAME
+
+
+1 role can be associated with Many user
+1 user can have 1 role
+
+

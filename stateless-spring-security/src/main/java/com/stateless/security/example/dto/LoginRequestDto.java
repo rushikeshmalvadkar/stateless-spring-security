@@ -1,4 +1,4 @@
-package com.stateless.security.example.controller.dto;
+package com.stateless.security.example.dto;
 
 import lombok.Getter;
 import lombok.Setter;
