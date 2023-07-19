@@ -1,20 +1,42 @@
 package com.stateless.security.example.config;
 
+import com.stateless.security.example.service.JpaUserDetailsService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final AuthenticationEntryPoint authenticationEntryPoint;
 
-    public static final String[] PUBLIC_URLS = {"/api/users/**"};
+
+    public static final String[] PUBLIC_URLS = {
+            "/api/users/**",
+            "/api/auth/**"
+    };
+
+
+
+    @Bean
+    /**
+     * We need this bean that's why creating
+     */
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -33,6 +55,15 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers(PUBLIC_URLS).permitAll()
                 .anyRequest().authenticated()
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                /**
+                 * We have to set this authenticationEntryPoint otherwise we will get 403 instead of 401 if login cred invalid
+                 */
+                .exceptionHandling()
+                .authenticationEntryPoint(authenticationEntryPoint)
                 .and()
                 .build();
     }

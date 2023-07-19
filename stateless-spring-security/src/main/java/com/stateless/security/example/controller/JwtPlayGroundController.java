@@ -17,7 +17,7 @@ public class JwtPlayGroundController {
     @PostMapping(value = "/accessToken")
     public String generateToken(@RequestBody LoginRequestDto loginRequestDto){
 
-        String username = loginRequestDto.getUsername();
+        String username = loginRequestDto.getEmail();
         String jwtToken = Jwts.builder()
                 .setId("A1234")
                 .setSubject(username)
