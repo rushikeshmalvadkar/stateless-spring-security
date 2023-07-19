@@ -14,7 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
 
-    public static final String PUBLIC_URLS = "/api/users/**";
+    public static final String[] PUBLIC_URLS = {"/api/users/**"};
 
     @Bean
     public PasswordEncoder passwordEncoder(){
