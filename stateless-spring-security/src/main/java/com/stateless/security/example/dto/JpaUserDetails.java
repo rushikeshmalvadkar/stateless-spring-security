@@ -15,11 +15,11 @@ public class JpaUserDetails implements UserDetails {
 
     private final UserEntity userEntity;
 
-    private final JpaGrantedAuthority jpaGrantedAuthority;
+    private final List<JpaGrantedAuthority> jpaGrantedAuthorities;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(jpaGrantedAuthority);
+        return jpaGrantedAuthorities;
     }
 
     @Override

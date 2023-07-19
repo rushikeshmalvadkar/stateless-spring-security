@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.awt.print.PageFormat;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +28,8 @@ public class JpaUserDetailsService implements UserDetailsService {
         UserEntity userEntity = this.userRepository.fetchUserWithRole(email)
                 .orElseThrow(() ->
                         new UsernameNotFoundException(String.format(USER_DOES_NOT_EXISTS_MESSAGE, email)));
+
         JpaGrantedAuthority jpaGrantedAuthority = new JpaGrantedAuthority(userEntity.getRole());
-        return new JpaUserDetails(userEntity, jpaGrantedAuthority);
+        return new JpaUserDetails(userEntity, List.of(jpaGrantedAuthority));
     }
 }
