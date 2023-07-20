@@ -2,6 +2,7 @@ package com.stateless.security.example.filter;
 
 import com.stateless.security.example.service.JpaUserDetailsService;
 import com.stateless.security.example.util.JwtUtil;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -64,7 +65,7 @@ public class AuthFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request,response);
             log.info("AuthFilter >>>>");
-        } catch (Exception ex) {
+        } catch (JwtException ex) {
             log.info("Delegating to global exception handler from AuthFilter");
             handlerExceptionResolver.resolveException(request , response , null,ex);
         }

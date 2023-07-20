@@ -7,6 +7,7 @@ import io.jsonwebtoken.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -33,7 +34,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleJwtException(JwtException ex){
         log.info("<<<<<<<<<<< handleJwtException");
         ErrorResponse errorResponse = new ErrorResponse();
-        errorResponse.setErrorMessages(List.of(ex.getMessage()));
+        errorResponse.setErrorMessages(List.of("Invalid Token"));
         errorResponse.setStatus(HttpStatus.UNAUTHORIZED);
         log.info("handleJwtException >>>>>>>>");
         return ResponseEntity
@@ -50,6 +51,18 @@ public class GlobalExceptionHandler {
         log.info("handleExpiredJwtException >>>>>>>>");
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
+                .body(errorResponse);
+    }
+
+    @ExceptionHandler(value = {AccessDeniedException.class})
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex){
+        log.info("<<<<<<<<<<< handleAccessDeniedException");
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setErrorMessages(List.of("You don't have permission to access this resource"));
+        errorResponse.setStatus(HttpStatus.FORBIDDEN);
+        log.info("handleAccessDeniedException >>>>>>>>");
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
                 .body(errorResponse);
     }
 

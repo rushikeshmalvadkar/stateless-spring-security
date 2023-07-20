@@ -25,7 +25,6 @@ public class AuthenticationEntryPointJwt implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException, ServletException {
         log.info("<<<<<<<<< AuthenticationEntryPointJwt");
-        log.info("Authentication exception info ::" , authException);
         handlerExceptionResolver.resolveException(request, response, null, authException);
         log.info("AuthenticationEntryPointJwt >>>>>>");
     }
