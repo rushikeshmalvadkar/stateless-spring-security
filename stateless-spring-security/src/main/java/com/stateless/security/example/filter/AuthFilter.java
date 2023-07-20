@@ -1,5 +1,6 @@
 package com.stateless.security.example.filter;
 
+import com.stateless.security.example.config.SecurityConfig;
 import com.stateless.security.example.service.JpaUserDetailsService;
 import com.stateless.security.example.util.JwtUtil;
 import io.jsonwebtoken.JwtException;
@@ -12,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -23,6 +25,7 @@ import javax.servlet.http.HttpFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 
 @Component
 @RequiredArgsConstructor
@@ -69,5 +72,12 @@ public class AuthFilter extends OncePerRequestFilter {
             log.info("Delegating to global exception handler from AuthFilter");
             handlerExceptionResolver.resolveException(request , response , null,ex);
         }
+    }
+
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        return Arrays.stream(SecurityConfig.PUBLIC_URLS)
+                        .anyMatch(url -> new AntPathRequestMatcher(url).matches(request));
     }
 }
