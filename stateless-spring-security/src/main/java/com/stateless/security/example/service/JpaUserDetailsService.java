@@ -24,12 +24,13 @@ public class JpaUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-
+        log.info("<<<<<< loadUserByUsername()");
         UserEntity userEntity = this.userRepository.fetchUserWithRole(email)
                 .orElseThrow(() ->
                         new UsernameNotFoundException(String.format(USER_DOES_NOT_EXISTS_MESSAGE, email)));
 
         JpaGrantedAuthority jpaGrantedAuthority = new JpaGrantedAuthority(userEntity.getRole());
+        log.info("loadUserByUsername() >>>>>");
         return new JpaUserDetails(userEntity, List.of(jpaGrantedAuthority));
     }
 }

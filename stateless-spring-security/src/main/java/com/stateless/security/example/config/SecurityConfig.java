@@ -1,5 +1,6 @@
 package com.stateless.security.example.config;
 
+import com.stateless.security.example.filter.AuthFilter;
 import com.stateless.security.example.service.JpaUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -15,12 +16,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
 
     private final AuthenticationEntryPoint authenticationEntryPoint;
+
+    private final AuthFilter authFilter;
 
 
     public static final String[] PUBLIC_URLS = {
@@ -65,6 +69,7 @@ public class SecurityConfig {
                 .exceptionHandling()
                 .authenticationEntryPoint(authenticationEntryPoint)
                 .and()
+                .addFilterBefore(authFilter , UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
