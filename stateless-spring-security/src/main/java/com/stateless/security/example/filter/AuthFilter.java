@@ -9,10 +9,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -30,33 +32,41 @@ public class AuthFilter extends OncePerRequestFilter {
 
     private final JpaUserDetailsService userDetailsService;
 
+
+    private final HandlerExceptionResolver handlerExceptionResolver;
+
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
-        log.info("<<<< AuthFilter");
+        try {
+            log.info("<<<< AuthFilter");
 
-        // Extract accessToken from request header
-        String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
+            // Extract accessToken from request header
+            String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (bearerToken != null){
-            String accessToken = bearerToken.split(" ")[1];
-            if (accessToken != null){
-                String username = jwtUtil.getUsername(accessToken);
-                UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+            if (bearerToken != null){
+                String accessToken = bearerToken.split(" ")[1];
+                if (accessToken != null){
+                    String username = jwtUtil.getUsername(accessToken);
+                    UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
-                boolean isTokenValid = jwtUtil.validateToken(accessToken, userDetails.getUsername());
+                    boolean isTokenValid = jwtUtil.validateToken(accessToken, userDetails.getUsername());
 
-                if (isTokenValid){
-                    Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities());
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    if (isTokenValid){
+                        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities());
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    }
                 }
             }
-        }
 
-        filterChain.doFilter(request,response);
-        log.info("AuthFilter >>>>");
+            filterChain.doFilter(request,response);
+            log.info("AuthFilter >>>>");
+        } catch (Exception ex) {
+            log.info("Delegating to global exception handler from AuthFilter");
+            handlerExceptionResolver.resolveException(request , response , null,ex);
+        }
     }
 }
